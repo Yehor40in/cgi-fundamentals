@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Lab1Graphics</title>
+	</head>
+	<body>
+
+		<canvas height="400" width="600" id="canvas"></canvas>
+		<script type="text/javascript">
+
+			let Figure = function(x, y, width, height) {
+				this.x = x;
+				this.y = y;
+				this.width = width;
+				this.height = height;
+
+				let canvas;
+				let ctx;
+				let N = 3;
+				let limit = 4 * N;
+				let sequence = [0, 1];
+				let dots = [];
+
+				this.fibonacci = function() {
+		            let val;
+		            for (let i = 1; ; i++) {
+		                val = sequence[i] + sequence[i - 1]
+		                if (val <= limit) sequence.push(val);
+		                else break;
+		            }
+	        	}
+
+				this.setup = function() {
+					canvas = document.getElementById("canvas");
+					ctx = canvas.getContext("2d");
+				}
+
+				this.drawRect = function() {
+					ctx.strokeRect(this.x, this.y, this.width, this.height);
+				}
+
+				this.createDots = function() {
+					let step = this.width / N;
+					let sideLimit = limit / 4;
+
+					let dotUpLeft = {
+						x: this.x,
+						y: this.y
+					};
+					dots.push(dotUpLeft);
+
+					let upperSideX = dotUpLeft.x + step;
+					for (let i = 0; i < sideLimit; i++) { 
+						dots.push({
+							x: upperSideX,
+							y: dotUpLeft.y
+						});
+						upperSideX += step;
+					}
+
+					let dotUpRight = {
+						x: this.x + this.width,
+						y: this.y
+					};
+					dots.push(dotUpRight);
+
+					let rightSideY = dotUpRight.y + step;
+					for (let i = 0; i < sideLimit; i++) { 
+						dots.push({
+							x: dotUpRight.x,
+							y: rightSideY
+						});
+						rightSideY += step;
+					}
+
+					let dotDownRight = {
+						x: this.x + this.width,
+						y: this.y + this.height
+					};
+					dots.push(dotDownRight);
+
+					let bottomSideX = dotDownRight.x - step;
+					for (let i = 0; i < sideLimit; i++) { 
+						dots.push({
+							x: bottomSideX,
+							y: dotDownRight.y
+						});
+						bottomSideX -= step;
+					}
+
+					let dotDownLeft = {
+						x: this.x,
+						y: this.y + this.height
+					};
+					dots.push(dotDownLeft);
+
+					let leftSideY = dotDownLeft.y - step;
+					for (let i = 0; i < sideLimit; i++) { 
+						dots.push({
+							x: dotDownLeft.x,
+							y: leftSideY
+						});
+						leftSideY -= step;
+					}
+				}
+
+				this.drawLine = function() {
+					ctx.strokeStyle = "rgb(0, 0, 150)";
+					for (let i = 0; i < dots.length; i++) {
+						for (let j = 0; j < dots.length; j++) {
+							let check = j - i;
+							if (check < 0) {
+								check += limit;
+							}
+							for (let k = 0; k < sequence.length; k++) {
+								if (sequence[k] == check) {
+									ctx.moveTo(dots[i].x, dots[i].y);
+									ctx.lineTo(dots[j].x, dots[j].y);
+									break;
+								}
+							}
+						}
+					}
+					ctx.stroke();
+				}
+			}
+
+			window.onload = function() {
+				let figure = new Figure(200, 100, 300, 300);
+				figure.setup();
+				figure.fibonacci();
+				figure.drawRect();
+				figure.createDots();
+				figure.drawLine();
+			}
+			
+		</script>
+
+	</body>
+</html>

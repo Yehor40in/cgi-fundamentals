@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Lab3</title>
+	<style type="text/css">
+		
+		#canvas {
+			border-style: solid;
+		}
+
+	</style>
+</head>
+<body>
+	<canvas width="600" height="400" id="canvas"></canvas>
+	<p style="color: blue">Крива Безьє</p>
+	<p style="color: red">B-сплайн</p>
+	<p style="color: green">Лінія, що з'єднує вершини</p>
+	<script type="text/javascript">
+		
+		let Figure = function (arr) {
+
+			let dots = [];
+			let dotsB = [];
+			let array;
+			let canvas;
+			let ctx;
+
+			this.arr = arr;
+
+			this.setup = function () {
+				canvas = document.getElementById("canvas");
+				ctx = canvas.getContext("2d");
+			}
+			//De Costeljau algorithm (itertaive)
+			this.drawBezier = function () {
+
+				let dist;
+				let k;
+				let general;
+				let t;
+				let temp;
+				let tempArray;
+				let i;
+
+				for (t = 0; t <= 1; t += 0.01) {
+
+					temp = t;
+					temp *= 100;
+					temp = Math.floor(temp);
+					tempArray = [];
+					array = [];
+					
+					for (let i = 0; i < arr.length; i++) {
+						array[i] = this.arr[i];
+					}
+
+					i = 0;
+					while (i < array.length - 1) {
+						
+						if (array.length == 2) {
+							general = Math.pow((Math.pow((array[1].x - array[0].x), 2) + Math.pow((array[1].y - array[0].y), 2) ), 0.5);
+							dist = (general * temp) / 100;
+							k = dist / general;
+
+							dots.push({
+								x : array[0].x + (array[1].x - array[0].x) * k,
+								y : array[0].y + (array[1].y - array[0].y) * k
+							});
+							break;
+						}
+						else if (i == array.length - 2) {
+							general = Math.pow((Math.pow((array[i + 1].x - array[i].x), 2) + Math.pow((array[i + 1].y - array[i].y), 2) ), 0.5);
+							dist = (general * temp) / 100;
+							k = dist / general;
+
+							tempArray.push({
+								x : array[i].x + (array[i + 1].x - array[i].x) * k,
+								y : array[i].y + (array[i + 1].y - array[i].y) * k
+							});
+
+							array = tempArray;
+							tempArray = [];
+							i = 0;
+						}
+						else {
+							general = Math.pow((Math.pow((array[i + 1].x - array[i].x), 2) + Math.pow((array[i + 1].y - array[i].y), 2) ), 0.5);
+							dist = (general * temp) / 100;
+							k = dist / general;
+
+							tempArray.push({
+								x : array[i].x + (array[i + 1].x - array[i].x) * k,
+								y : array[i].y + (array[i + 1].y - array[i].y) * k
+							});
+							i++;
+						}
+					}
+				}
+
+				ctx.beginPath();
+				ctx.strokeStyle = "rgb(0, 0, 255)";
+				ctx.moveTo(dots[0].x, dots[0].y);
+				for (let i = 1; i < dots.length; i++) {
+					ctx.lineTo(dots[i].x, dots[i].y);
+				}
+				ctx.stroke();
+
+				
+				ctx.beginPath();
+				ctx.strokeStyle = "rgb(0, 255, 0)";
+				ctx.moveTo(this.arr[0].x, this.arr[0].y);
+				for (let i = 1; i < this.arr.length; i++) {
+					ctx.lineTo(this.arr[i].x, this.arr[i].y);
+				}
+				ctx.stroke();
+				
+			}
+
+			this.drawCubicCurve = function () {
+				let start = 0,
+					end = 3,
+					t,
+					X, Y;
+
+				array = [];
+				for (let i = 0; i < this.arr.length; i++) {
+					array[i] = this.arr[i];
+				}
+
+				while (end <= array.length - 1) {
+
+					for (t = 0; t <= 1; t += 0.01) {
+						X = ((Math.pow((1 - t), 3) / 6 ) * array[start].x) + 
+							((3 * Math.pow(t, 3) - 6 * Math.pow(t, 2) + 4) / 6 * array[start + 1].x) + 
+							((-3 * Math.pow(t, 3) + 3 * Math.pow(t, 2) + 3 * t + 1) / 6 * array[start + 2].x) + 
+							(Math.pow(t, 3) / 6 * array[end].x);
+
+						Y = ((Math.pow((1 - t), 3) / 6 ) * array[start].y) + 
+							((3 * Math.pow(t, 3) - 6 * Math.pow(t, 2) + 4) / 6 * array[start + 1].y) + 
+							((-3 * Math.pow(t, 3) + 3 * Math.pow(t, 2) + 3 * t + 1) / 6 * array[start + 2].y) + 
+							(Math.pow(t, 3) / 6 * array[end].y);
+							
+						let present = false;
+						for (let i = 0; i < dotsB.length; i++) {
+							if (dotsB[i].x == X && dotsB[i].y == Y) {
+								present = true;
+								break;
+							}
+						}
+						if (!present) {
+							dotsB.push({
+								x : X,
+								y : Y
+							});
+						}
+					}	
+					start += 1;
+					end += 1;
+				}
+
+				ctx.beginPath();
+				ctx.strokeStyle = "rgb(255, 0, 0)";
+				ctx.moveTo(dotsB[0].x, dotsB[0].y);
+				for (let i = 1; i < dotsB.length; i++) {
+					ctx.lineTo(dotsB[i].x, dotsB[i].y);
+				}
+				ctx.stroke();
+			}
+		}
+
+		let P1 = {
+			x : 100,
+			y : 200
+		};
+		let P2 = {
+			x : 200,
+			y : 70
+		};
+		let P3 = {
+			x : 310,
+			y : 300
+		};
+		let P4 = {
+			x : 420,
+			y : 130
+		};
+		let P5 = {
+			x : 500,
+			y : 250
+		};
+		let P6 = {
+			x : 570,
+			y : 100
+		};
+
+		let arr = [];
+
+		arr.push(P1);
+		arr.push(P2);
+		arr.push(P3);
+		arr.push(P4);
+		arr.push(P5);
+		arr.push(P6);
+
+		let figure = new Figure(arr);
+
+		figure.setup();
+		figure.drawBezier();
+		figure.drawCubicCurve();
+
+		//4 лаб - варіант 16г
+	</script>
+</body>
+</html>

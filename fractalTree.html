@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Lab2Graphics</title>
+</head>
+<body>
+	<canvas width="1000" height="700" id="canvas"></canvas>
+	<script type="text/javascript">
+		
+		let Bush = function (x, y) {
+			this.x = x;
+			this.y = y;
+
+			let canvas;
+			let ctx;
+
+			this.setup = function () {
+				canvas = document.getElementById('canvas');
+				ctx = canvas.getContext('2d');
+			}
+
+			this.draw = function (xStart, yStart, xEnd, yEnd, depth) {
+				let x0 = xStart, y0 = yStart,
+					x1 = xEnd, y1 = yEnd,
+					x2, y2,
+					x3, y3, 
+					x4, y4, 
+					x5, y5, 
+					x6, y6,
+					x7, y7,
+					leftBranchBeginX1, leftBranchBeginY1,
+					rightBranchBeginX1, rightBranchBeginY1,
+					leftBranchEndX2, leftBranchEndY2,
+					leftBranchEndX3, leftBranchEndY3,
+					leftBranchEndX4, leftBranchEndY4,
+					rightBranchEndX5, rightBranchEndY5,
+					rightBranchEndX6, rightBranchEndY6,
+					rightBranchEndX7, rightBranchEndY7;
+
+				if (depth >= 0) {
+					ctx.strokeStyle = "rgb(255, 0, 0)"; 
+					//обчислюємо координати точок нашої фігури
+					x2 = (x0 - x1) * Math.cos(2.3561944901923) - (y0 - y1) * Math.sin(2.3561944901923) + x1;
+					y2 = (x0 - x1) * Math.sin(2.3561944901923) + (y0 - y1) * Math.cos(2.3561944901923) + y1;
+
+					x3 = (x1 - x2) * Math.cos(-2.2689280275926) - (y1 - y2) * Math.sin(-2.2689280275926) + x2;
+					y3 = (x1 - x2) * Math.sin(-2.2689280275926) + (y1 - y2) * Math.cos(-2.2689280275926) + y2;
+
+					x4 = (x2 - x3) * Math.cos(-2.5307274153918) - (y2 - y3) * Math.sin(-2.5307274153918) + x3;
+					y4 = (x2 - x3) * Math.sin(-2.5307274153918) + (y2 - y3) * Math.cos(-2.5307274153918) + y3;
+
+					x5 = (x0 - x1) * Math.cos(-1.832595714594) - (y0 - y1) * Math.sin(-1.832595714594) + x1;
+					y5 = (x0 - x1) * Math.sin(-1.832595714594) + (y0 - y1) * Math.cos(-1.832595714594) + y1;
+
+					x6 = (x1 - x5) * Math.cos(2.2689280275926) - (y1 - y5) * Math.sin(2.2689280275926) + x5;
+					y6 = (x1 - x5) * Math.sin(2.2689280275926) + (y1 - y5) * Math.cos(2.2689280275926) + y5;
+
+					x7 = (x5 - x6) * Math.cos(2.6179938779915) - (y5 - y6) * Math.sin(2.6179938779915) + x6;
+					y7 = (x5 - x6) * Math.sin(2.6179938779915) + (y5 - y6) * Math.cos(2.6179938779915) + y6;
+
+					leftBranchBeginX1 = x1;
+					leftBranchBeginY1 = y1;
+
+					leftBranchEndX2 = (leftBranchBeginX1 + 2 * x2) / 3;
+					leftBranchEndY2 = (leftBranchBeginY1 + 2 * y2) / 3;
+
+					leftBranchEndX3 = (leftBranchEndX2 + 2 * x3) / 3;
+					leftBranchEndY3 = (leftBranchEndY2 + 2 * y3) / 3;
+
+					leftBranchEndX4 = (leftBranchEndX3 + 2 * x4) / 3;
+					leftBranchEndY4 = (leftBranchEndY3 + 2 * y4) / 3;
+
+					rightBranchBeginX1 = x1;
+					rightBranchBeginY1 = y1;
+
+					rightBranchEndX5 = (rightBranchBeginX1 + 2 * x5) / 3;
+					rightBranchEndY5 = (rightBranchBeginY1 + 2 * y5) / 3;
+
+					rightBranchEndX6 = (rightBranchEndX5 + 2 * x6) / 3;
+					rightBranchEndY6 = (rightBranchEndY5 + 2 * y6) / 3;
+
+					rightBranchEndX7 = (rightBranchEndX6 + 2 * x7) / 3;
+					rightBranchEndY7 = (rightBranchEndY6 + 2 * y7) / 3;
+
+					//з'єднуємо точки лініямми
+					ctx.moveTo(x0, y0);
+					ctx.lineTo(leftBranchBeginX1, leftBranchBeginY1);
+					ctx.lineTo(leftBranchEndX2, leftBranchEndY2);
+					ctx.lineTo(leftBranchEndX3, leftBranchEndY3);
+					ctx.lineTo(leftBranchEndX4, leftBranchEndY4);
+
+					ctx.moveTo(rightBranchBeginX1, rightBranchBeginY1);
+					ctx.lineTo(rightBranchEndX5, rightBranchEndY5);
+					ctx.lineTo(rightBranchEndX6, rightBranchEndY6);
+					ctx.lineTo(rightBranchEndX7, rightBranchEndY7);
+					ctx.stroke();
+
+					depth -= 1;
+
+					this.draw(leftBranchBeginX1, leftBranchBeginY1, leftBranchEndX2, leftBranchEndY2, depth);
+					this.draw(leftBranchEndX2, leftBranchEndY2, leftBranchEndX3, leftBranchEndY3, depth);
+					this.draw(leftBranchEndX3, leftBranchEndY3, leftBranchEndX4, leftBranchEndY4, depth);
+					this.draw(rightBranchBeginX1, rightBranchBeginY1, rightBranchEndX5, rightBranchEndY5, depth);
+					this.draw(rightBranchEndX5, rightBranchEndY5, rightBranchEndX6, rightBranchEndY6, depth);
+					this.draw(rightBranchEndX6, rightBranchEndY6, rightBranchEndX7, rightBranchEndY7, depth);
+				}
+			}
+		}
+
+		window.onload = function () {
+			let bush = new Bush(500, 600),
+				endX = bush.x,
+				endY = 530;
+
+			bush.setup();
+			bush.draw(bush.x, bush.y, endX, endY, 2);
+		}
+
+		//ВРІАНТ 3 ЛАБИ - №22
+	</script>
+</body>
+</html>
